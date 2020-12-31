@@ -21,6 +21,7 @@ from kivy.storage.dictstore import DictStore
 from kivy.uix.popup import Popup 
 
 
+
 from datetime import datetime
 from git import Git
 import os, pickle, time, requests
@@ -29,6 +30,14 @@ HOME_URL = f'{os.path.expanduser("~")}/.gitpalette/'
 BSIZE = 20
 MAX_COMMIT = 100
 UP_URL = 'mrlittle.heroku.app/gitpalette/update'
+CR_INFO = '''
+@Source Code
+    Github - https://github.com/dmrlittle/gitpalette
+                                    
+@Author                      
+    Email - shyamselvaraj@protonmail.com
+    Github ID - dmrlittle
+'''
 
 class ParentLayout(BoxLayout):
     pass
@@ -46,21 +55,18 @@ class gitpaletteApp(App,Git):
     
     
     def build(self):
+        self.icon = 'gitpalette.png'
+
         layout1 = self.add_id(BoxLayout(orientation='vertical'), 'LT1')
         
         layout10 = StackLayout(orientation='lr-tb', padding=[0,20,20,0],
                                size_hint=(1,None),size=(30,80))
         
         popup = Popup(title='Details',
-                      content=Label(text='''@Source Code
-    Github - 
-                                    
-@Author                      
-    Email - shyamselvaraj@protonmail.com
-    Github ID - dmrlittle'''),
+                      content=TextInput(text=CR_INFO, readonly = True),
                       size_hint=(None, None), size=(400, 400))
         
-        layout10.add_widget(Label(text = "Info! - Daily you used click on 'Initiate', Don't worry if you're a Active Github member, this can be Undone", size_hint=(0.9, .6), size=(150,50)))
+        layout10.add_widget(Label(text = "Info! - Daily you used click on 'Initiate', Don't worry if you're a Active Github member, this can be Undone by deleting the repo.", size_hint=(0.9, .6), size=(150,50)))
         layout10.add_widget(Button(text = "Help",on_press= popup.open,
                                    background_color = [34/255.0,167/255.0,240/255.0,1],
                                    size_hint=(0.1, .6), size=(150,50)))
@@ -346,17 +352,24 @@ class gitpaletteApp(App,Git):
             if(val is widget):
                 return key
         return None
+    
+    def on_stop(self):
+        self.root_window.close()
 
 def font_size(width, height):
     print(width,height)
     
+def winclose(*args):
+    print(90)
 
 if __name__=="__main__":
 
     Window.size = (1210,590)
     Window.on_resize = font_size
+
     
     obj = gitpaletteApp()
+
     obj.run()
     
     

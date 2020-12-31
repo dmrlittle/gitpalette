@@ -12,8 +12,8 @@ import secrets, time
 
 class Git():
     INFO = """#Repo for gitpalette Usage
-Project Link - https://github.com/dmrlittle/gitpalette/
-Author - **@dmrlittle**
+\nProject Link - https://github.com/dmrlittle/gitpalette/
+\nAuthor - **@dmrlittle**
 """
     
     def __init__(self,*args):
