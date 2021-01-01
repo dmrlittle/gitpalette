@@ -1,32 +1,24 @@
 # -*- coding: utf-8 -*-
-
 from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
-from kivymd.uix.gridlayout import MDGridLayout
-from kivy.properties import ColorProperty
 from kivy.uix.stacklayout import StackLayout
-from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.checkbox import CheckBox
-from kivy.uix.slider import Slider
 from kivy.core.window import Window
-from kivy.config import Config
 from kivy.uix.progressbar import ProgressBar
 from kivy.clock import Clock
 from kivy.storage.dictstore import DictStore
 from kivy.uix.popup import Popup 
 
 
-
 from datetime import datetime
 from git import Git
-import os, pickle, time, requests
+import pickle, requests, os
 
-HOME_URL = f'{os.path.expanduser("~")}/.gitpalette/'
+
 BSIZE = 20
 MAX_COMMIT = 100
 UP_URL = 'mrlittle.heroku.app/gitpalette/update'
@@ -42,20 +34,23 @@ CR_INFO = '''
 class ParentLayout(BoxLayout):
     pass
 
-class gitpaletteApp(App,Git):
+class gitpaletteApp(App):
     ids={}
     selected_id = []
-    date = datetime.today().date()
-    dictstore = DictStore(filename='gitpalette')
-    dictstore.store_load()
+    g = None
+    
     colourbutton = Button(background_color=[0, 1, 0, 1],
                                 size_hint=(None, None), size=(20,20))
-    g = None
     pop = Popup(size_hint=(.8, .2), size=(500, 100))
     
-    
+    def __init__(self):
+        super().__init__()
+        self.dictstore = DictStore(filename=f'{self.user_data_dir}/defaults')
+        self.dictstore.store_load()
+        self.date = datetime.today().date()
+        
     def build(self):
-        self.icon = 'gitpalette.png'
+        self.icon = 'gitpalette.ico'
 
         layout1 = self.add_id(BoxLayout(orientation='vertical'), 'LT1')
         
@@ -66,7 +61,7 @@ class gitpaletteApp(App,Git):
                       content=TextInput(text=CR_INFO, readonly = True),
                       size_hint=(None, None), size=(400, 400))
         
-        layout10.add_widget(Label(text = "Info! - Daily you used click on 'Initiate', Don't worry if you're a Active Github member, this can be Undone by deleting the repo.", size_hint=(0.9, .6), size=(150,50)))
+        layout10.add_widget(Label(text = f"Info! - Daily you used click on 'Initiate', Don't worry if you're a Active Github member, this can be Undone by deleting the repo.", size_hint=(0.9, .6), size=(150,50)))
         layout10.add_widget(Button(text = "Help",on_press= popup.open,
                                    background_color = [34/255.0,167/255.0,240/255.0,1],
                                    size_hint=(0.1, .6), size=(150,50)))
@@ -170,12 +165,12 @@ class gitpaletteApp(App,Git):
         layout.add_widget(layout2)
         layout1.disabled = False
         
-        self.sys_load()
             
         return layout
     
     def on_start(self):
         try:
+            self.sys_load()
             data = pickle.loads(requests.get(UP_URL))
             if(data != None):
                 self.pop.title = data[0]
@@ -273,8 +268,6 @@ class gitpaletteApp(App,Git):
             button.disabled = False
             button.text = 'Save'
             button.background_color = [0,1,0,1]
-            if(os.path.isfile(HOME_URL+'config')):
-                os.remove(HOME_URL+'config')
             self.ids['LT1'].disabled = False    
             self.ids['SB1'].disabled = True
             self.ids['SB1'].background_color = [1,1,1,1]
@@ -361,15 +354,14 @@ def font_size(width, height):
     
 def winclose(*args):
     print(90)
-
+    
 if __name__=="__main__":
-
+    
     Window.size = (1210,590)
     Window.on_resize = font_size
-
+    Window.set_icon("gitpalette.ico")
     
     obj = gitpaletteApp()
-
     obj.run()
     
     
