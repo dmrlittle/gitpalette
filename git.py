@@ -28,13 +28,13 @@ class Git():
         except Exception as e:
             return str(e.data['message'])
         
-    def create(self):
+    def create(self,code = ''):
         for repo in self.usr.get_repos():
-            if(repo.name == 'gitpalette_'):
+            if(repo.name == f'gitpalette_{code}'):
                 self.repo = repo
                 break
         else:
-            self.repo = self.usr.create_repo(name='gitpalette_')
+            self.repo = self.usr.create_repo(name=f'gitpalette_{code}')
             self.repo.create_file("GenFile.txt", "init commit", secrets.token_hex(16))
             self.repo.create_file("README.md", "info commit", self.INFO)
         

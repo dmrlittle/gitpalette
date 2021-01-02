@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+__version__ = '1.0.0'
+
+
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -16,20 +20,12 @@ from kivy.uix.popup import Popup
 
 from datetime import datetime
 from git import Git
+from data import CR_INFO, RM_INFO, UP_URL, HD_INFO
 import pickle, requests, os
 
 
 BSIZE = 20
 MAX_COMMIT = 100
-UP_URL = 'mrlittle.heroku.app/gitpalette/update'
-CR_INFO = '''
-@Source Code
-    Github - https://github.com/dmrlittle/gitpalette
-                                    
-@Author                      
-    Email - shyamselvaraj@protonmail.com
-    Github ID - dmrlittle
-'''
 
 class ParentLayout(BoxLayout):
     pass
@@ -57,12 +53,19 @@ class gitpaletteApp(App):
         layout10 = StackLayout(orientation='lr-tb', padding=[0,20,20,0],
                                size_hint=(1,None),size=(30,80))
         
-        popup = Popup(title='Details',
-                      content=TextInput(text=CR_INFO, readonly = True),
+        popup1 = Popup(title=RM_INFO[0],
+                      content=TextInput(text=RM_INFO[1], readonly = True),
                       size_hint=(None, None), size=(400, 400))
         
-        layout10.add_widget(Label(text = f"Info! - Daily you used click on 'Initiate', Don't worry if you're a Active Github member, this can be Undone by deleting the repo.", size_hint=(0.9, .6), size=(150,50)))
-        layout10.add_widget(Button(text = "Help",on_press= popup.open,
+        popup2 = Popup(title=CR_INFO[0],
+                      content=TextInput(text=CR_INFO[1], readonly = True),
+                      size_hint=(None, None), size=(400, 400))
+        
+        layout10.add_widget(Label(text = HD_INFO, size_hint=(0.8, .6), size=(150,50)))
+        layout10.add_widget(Button(text = "Info",on_press= popup1.open,
+                                   background_color = [34/255.0,167/255.0,240/255.0,1],
+                                   size_hint=(0.1, .6), size=(150,50)))
+        layout10.add_widget(Button(text = "Help",on_press= popup2.open,
                                    background_color = [34/255.0,167/255.0,240/255.0,1],
                                    size_hint=(0.1, .6), size=(150,50)))
 
@@ -89,7 +92,7 @@ class gitpaletteApp(App):
         layout11 =  GridLayout(orientation='tb-lr', rows=7, cols=54, padding=[20,20,20,20])
         start_day = datetime(self.date.year,1,1).weekday()+1
         [layout11.add_widget(Label()) for i in range(start_day)]
-        for i in range(366 if (self.date.year%4 == 0 and self.date.year%100 != 0)  else 365):
+        for i in range(self.yrdays()):
             if i < int(self.date.strftime('%j'))-1 :
                 layout11.add_widget(self.add_id(Button(disabled=True,
                                                 on_press= self.bpress1),i))
@@ -98,11 +101,17 @@ class gitpaletteApp(App):
                 
         layout12 = StackLayout(orientation='rl-tb', padding=[20,0,20,0], size_hint=(1, None), size=(150,20))
         
-        layout12.add_widget(Label(text="Days Unavailable", size_hint=(None, None), size=(130,20)))
+        layout12.add_widget(Label(text="Days Unavailable", size_hint=(.1, None), size=(130,20)))
         layout12.add_widget(Button(disabled=True,
                                    size_hint=(None, None), size=(20,20)))
-        layout12.add_widget(Label(text='Days Available', size_hint=(None, None), size=(130,20)))
+        layout12.add_widget(Label(text='Days Available', size_hint=(.1, None), size=(130,20)))
         layout12.add_widget(Button(size_hint=(None, None), size=(20,20)))
+        
+        layout121 = StackLayout(orientation='lr-tb', size_hint=(0.75, None), size=(150,20))
+        layout121.add_widget(Button(text='<< shift', size_hint=(None, None), size=(80,20), on_press=self.bpress8))
+        layout121.add_widget(Button(text='shift >>', size_hint=(None, None), size=(80,20), on_press=self.bpress8))
+        layout12.add_widget(layout121)
+        
         
         label2 = Label(text='Configurations', bold=True,
                        size_hint=(1, None), size=(150,50))
@@ -171,10 +180,10 @@ class gitpaletteApp(App):
     def on_start(self):
         try:
             self.sys_load()
-            data = pickle.loads(requests.get(UP_URL))
+            data = pickle.loads(requests.post(UP_URL,data=pickle.dumps(__version__)))
             if(data != None):
                 self.pop.title = data[0]
-                self.pop.content = Label(text=data[1])
+                self.pop.content = f'data[1]'
                 self.pop.auto_dismiss = data[2]
                 self.pop.open()
         except Exception as e:
@@ -183,9 +192,8 @@ class gitpaletteApp(App):
     def sys_load(self):
         try:
             if(self.dictstore.store_exists(key=1)):
-                self.selected_id = self.dictstore.store_get(key=1)
-                for i in self.selected_id:
-                    print(self.ids[i].background_color)
+                temp1 = self.dictstore.store_get(key=1)
+                for i in temp1:
                     self.bpress1(self.ids[i])
             if(self.dictstore.store_exists(key=0)):
                 self.g = self.dictstore.store_get(key=0)
@@ -208,7 +216,6 @@ class gitpaletteApp(App):
             button.background_color = [1, 1, 1, 1]
             self.selected_id.remove(self.get_id(button))
 
-        print(self.selected_id)
     def bpress2(self,button):
         self.colourbutton.background_color=button.background_color
 
@@ -319,6 +326,26 @@ class gitpaletteApp(App):
         self.dictstore.store_put(key=3,value=self.ids['PB'].value)
         self.dictstore.store_sync()
         
+    def bpress8(self,button=None):
+        if not button:
+            pass
+        elif(button.text == 'shift >>'):
+            temp1 = [(id+7) for id in self.selected_id]
+        else:
+            temp1 = [(id-7) for id in self.selected_id]
+        if (max(temp1) >= self.yrdays() or min(temp1) <0):
+            return
+        for i in range(self.yrdays()):
+            self.ids[i].background_color = [1,1,1,1]
+        self.selected_id = temp1
+        for i in temp1:
+            self.bpress1(self.ids[i])
+        
+    def yrdays(self):
+        if (self.date.year%4 == 0 and self.date.year%100 != 0):
+            return 366
+        return 365
+    
     def datechange(self):
         for i in range(366 if (self.date.year%4 == 0 and self.date.year%100 != 0)  else 365):
             if i < int(self.date.strftime('%j'))-1 :
@@ -358,7 +385,7 @@ def winclose(*args):
 if __name__=="__main__":
     
     Window.size = (1210,590)
-    Window.on_resize = font_size
+    #Window.on_resize = font_size
     Window.set_icon("gitpalette.ico")
     
     obj = gitpaletteApp()
