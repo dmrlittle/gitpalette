@@ -7,6 +7,10 @@ HD_INFO = f"Don't forget to click on 'Initiate' daily!"
 RM_INFO=[\
 '''ReadMe''',
 '''
+For Text Generation 
+    Visit - https://textcraft.net/
+    Use Font - Minecraftia
+
 Hiding Art Work
     - Change the visibility of the repository to 'private'
     

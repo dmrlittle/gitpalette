@@ -19,8 +19,8 @@ from kivy.uix.popup import Popup
 
 
 from datetime import datetime
-from git import Git
-from data import CR_INFO, RM_INFO, UP_URL, HD_INFO
+from mod.git import Git
+from mod.data import CR_INFO, RM_INFO, UP_URL, HD_INFO
 import pickle, requests, os
 
 
@@ -46,6 +46,7 @@ class gitpaletteApp(App):
         self.date = datetime.today().date()
         
     def build(self):
+        HD_INFO = f'{self.user_data_dir}/defaults'
         self.icon = 'gitpalette.ico'
 
         layout1 = self.add_id(BoxLayout(orientation='vertical'), 'LT1')
@@ -378,10 +379,7 @@ class gitpaletteApp(App):
 
 def font_size(width, height):
     print(width,height)
-    
-def winclose(*args):
-    print(90)
-    
+      
 if __name__=="__main__":
     
     Window.size = (1210,590)
