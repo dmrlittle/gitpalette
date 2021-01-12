@@ -179,8 +179,11 @@ class gitpaletteApp(App):
         return layout
     
     def on_start(self):
+        Clock.create_trigger(self.sys_updater, 1)()
+        self.sys_load()
+    
+    def sys_updater(self,dt):
         try:
-            self.sys_load()
             data = pickle.loads(requests.post(UP_URL,data=pickle.dumps(__version__)))
             if(data != None):
                 self.pop.title = data[0]
