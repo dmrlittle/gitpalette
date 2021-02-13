@@ -30,9 +30,9 @@ gitPalette is free to use and does not collect or save any user data from the GU
 This is built using KIVY (Python).
 If you have want to run the source code : run <b>main.py</b> after installing kivy dependencies.
 The local data will be stored
-	On Windows, %APPDATA%/<app_name> is returned.
-	On Linux, $XDG_CONFIG_HOME/<app_name> is returned.
-	On OS X, ~/Library/Application Support/<app_name> is returned.
+	On Windows, %APPDATA%/<app_name> 
+	On Linux, $XDG_CONFIG_HOME/<app_name> 
+	On OS X, ~/Library/Application Support/<app_name> 
 </pre>
 
 [//]: #ImageLinks
@@ -41,7 +41,7 @@ The local data will be stored
 [03]: https://i.imgur.com/Mpx2I7w.png
 
 [//]: #DownloadLinks
-[101]: #
+[101]: https://sourceforge.net/projects/gitpalette/files/gitPalette.exe/download
 [102]: #
 [103]: #
 [104]: #
